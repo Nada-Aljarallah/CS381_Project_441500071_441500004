@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YIC Events | Calendar</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <span class="logo">YIC Events</span>
+      <nav class="top-nav">
+        <a href="home.html">Home</a>
+        <a href="events.html">Events</a>
+        <a href="calendar.html" class="active">Calendar</a>
+        <a href="dashboard.html">Dashboard</a>
+      </nav>
+    </div>
+  </header>
+  <main class="container">
+    <section class="calendar-card card card--wide card--decor" id="calendarPage">
+      <div class="dashboard-title">
+        <div class="admin-heading">
+          <h2>Event Calendar</h2>
+          <p>See upcoming events by month and open details directly from the calendar.</p>
+        </div>
+        <div class="dashboard-title-actions">
+          <a href="events.html" class="dashboard-events-btn">Back</a>
+          <a href="events.html" class="dashboard-events-btn">Browse Events</a>
+        </div>
+      </div>
+      <div class="calendar-toolbar">
+        <button type="button" class="calendar-nav-btn" id="calendarPrevBtn">Previous</button>
+        <h3 class="calendar-month" id="calendarMonthLabel">May 2026</h3>
+        <button type="button" class="calendar-nav-btn" id="calendarNextBtn">Next</button>
+      </div>
+      <div class="calendar-grid calendar-grid--labels" id="calendarDayLabels"></div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+    </section>
+  </main>
+  <div class="modal-overlay" id="eventDetailsModal">
+    <div class="modal-card">
+      <button class="close-modal" onclick="closeEventDetailsModal()">&times;</button>
+      <h3 id="modalEventTitle">Event Title</h3>
+      <div class="modal-event-details">
+        <p><strong>Date:</strong> <span id="modalEventDate"></span></p>
+        <p><strong>Location:</strong> <span id="modalEventLocation"></span></p>
+        <p><strong>Category:</strong> <span id="modalEventCategory"></span></p>
+        <p><strong>Description:</strong></p>
+        <p id="modalEventDescription"></p>
+      </div>
+    </div>
+  </div>
+  <footer class="site-footer">
+    <p>YIC Events</p>
+    <p>Layan 441500004 ~ Nada 441500071</p>
+  </footer>
+  <script src="../js/script.js"></script>
+</body>
+</html>

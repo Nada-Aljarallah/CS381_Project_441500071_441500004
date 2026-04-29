@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YIC Events | Dashboard</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <span class="logo">YIC Events</span>
+      <nav class="top-nav">
+        <a href="../pages/home.html">Home</a>
+        <a href="dashboard.html" class="active">Dashboard</a>
+        <a href="../php/logout.php">Logout</a>
+      </nav>
+    </div>
+  </header>
+  <main class="container">
+    <section class="dashboard-card card card--wide card--decor" id="dashboardPage">
+      <div class="dashboard-title">
+        <h2 id="dashboardWelcome">Welcome, dear user!</h2>
+        <div class="dashboard-title-actions">
+          <a href="../pages/home.html" class="dashboard-events-btn">Back</a>
+          <a href="events.html" class="dashboard-events-btn">Browse Events</a>
+          <a href="calendar.html" class="dashboard-events-btn">Calendar</a>
+        </div>
+      </div>
+        <div class="dashboard-section">
+          <div class="section-header">
+            <h3>New Registrations</h3>
+          </div>
+          <div class="registration-list" id="newRegistrations"></div>
+        </div>
+        <div class="dashboard-section">
+          <div class="section-header">
+            <h3>Past Registrations</h3>
+          </div>
+          <div class="registration-list" id="pastRegistrations"></div>
+        </div>
+    </section>
+  </main>
+  <div class="modal-overlay" id="eventDetailsModal">
+    <div class="modal-card">
+      <button class="close-modal" onclick="closeEventDetailsModal()">&times;</button>
+      <h3 id="modalEventTitle">Event Title</h3>
+            
+      <div class="modal-event-details">
+        <p><strong>Date:</strong> <span id="modalEventDate"></span></p>
+        <p><strong>Location:</strong> <span id="modalEventLocation"></span></p>
+        <p><strong>Category:</strong> <span id="modalEventCategory"></span></p>
+        <p><strong>Description:</strong></p>
+        <p id="modalEventDescription"></p>
+      </div>
+    </div>
+  </div>
+  <footer class="site-footer">
+    <p>YIC Events</p>
+    <p>Layan 441500004 ~ Nada 441500071</p>
+  </footer>
+  <script src="../js/script.js"></script>
+</body>
+</html>
+
