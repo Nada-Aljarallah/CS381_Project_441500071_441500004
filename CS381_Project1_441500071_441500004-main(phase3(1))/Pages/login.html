@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YIC Events | Login</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <span class="logo">YIC Events</span>
+      <nav class="top-nav">
+        <a href="home.html">Home</a>
+        <a href="login.html" class="active">Login</a>
+       
+      </nav>
+    </div>
+  </header>
+  <main class="container">
+    <section class="login-card card card--wide card--decor">
+      <div class="dashboard-title">
+        <a href="home.html" class="dashboard-events-btn">Back</a>
+      </div>
+      <h2>User Login Page</h2>
+      <form action="../php/login_process.php" method="POST" class="login-form" id="loginForm">
+        <label>
+          Student ID:
+          <input type="text" id="loginStudentId" name="student_id" placeholder="Enter your student ID" required />
+        </label>
+        <label>
+          Password:
+          <input type="password" id="loginPassword" name="password" placeholder="XXXXXXXXX" required />
+        </label>
+        <button type="submit" class="btn login-btn">Login</button>
+      </form>
+      <p class="register-text">Don't have an account? <a href="register.html">Register</a></p>
+    </section>
+  </main>
+  <div class="modal-overlay" id="confirmationModal">
+    <div class="modal-card">
+      <h3 id="modalTitle">Confirmation</h3>
+      <p id="modalMessage">Are you sure?</p>
+      <div class="modal-actions">
+        <button class="btn yes-btn" onclick="confirmModalChoice(true)">Yes</button>
+        <button class="btn no-btn" onclick="confirmModalChoice(false)">No</button>
+      </div>
+    </div>
+  </div>
+  <footer class="site-footer">
+    <p>YIC Events</p>
+    <p>Layan 441500004 ~ Nada 441500071</p>
+  </footer>
+  <script src="../js/script.js"></script>
+</body>
+</html>
