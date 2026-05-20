@@ -7,7 +7,10 @@ if (!isset($_SESSION['role'])) {
 }
 
 $csrf_token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
-if (empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $csrf_token)) {
+
+// Ensure token is a string to prevent type mismatch errors, and set a 403 status code
+if (empty($_SESSION['csrf_token']) || !is_string($csrf_token) || !hash_equals($_SESSION['csrf_token'], $csrf_token)) {
+    http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'CSRF token validation failed.']);
     exit;
 }
@@ -25,6 +28,9 @@ if ($action === 'delete') {
         exit;
     }
     try {
+        $stmtReg = $pdo->prepare('DELETE FROM registrations WHERE student_id = ?');
+        $stmtReg->execute([$student_id]);
+        
         $stmt = $pdo->prepare('DELETE FROM users WHERE student_id = ?');
         $stmt->execute([$student_id]);
         echo json_encode(['success' => true]);

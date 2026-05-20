@@ -10,9 +10,13 @@ function getAllEvents() {
 function isAdminAuthenticated() {
   return fetch('../php/check_admin.php', {
     credentials: 'same-origin',
+    cache: 'no-store',
     headers: { 'X-Requested-With': 'XMLHttpRequest' }
   }).then(response => response.json())
     .then(data => {
+      if (data && data.success && data.is_admin === true && data.csrf_token) {
+        sessionStorage.setItem('csrf_token', data.csrf_token);
+      }
       return data && data.success && data.is_admin === true;
     }).catch(() => false);
 }
@@ -40,10 +44,14 @@ let currentConfirmCallback = null;
 function getCurrentUser() {
   return fetch('../php/get_current_user.php', {
     credentials: 'same-origin',
+    cache: 'no-store',
     headers: { 'X-Requested-With': 'XMLHttpRequest' }
   }).then(response => response.json())
     .then(data => {
       if (data && data.success && data.user) {
+        if (data.csrf_token) {
+          sessionStorage.setItem('csrf_token', data.csrf_token);
+        }
         return data.user;
       }
       return null;
@@ -56,13 +64,22 @@ function postToPhp(url, data) {
       payload.append(key, value);
     }
   });
+  
+  const headers = {
+    'X-Requested-With': 'XMLHttpRequest'
+  };
+  
+  const csrfToken = sessionStorage.getItem('csrf_token');
+  if (csrfToken) {
+    payload.append('csrf_token', csrfToken);
+    headers['X-CSRF-TOKEN'] = csrfToken;
+  }
+  
   return fetch(url, {
     method: 'POST',
     body: payload,
     credentials: 'same-origin',
-    headers: {
-      'X-Requested-With': 'XMLHttpRequest'
-    }
+    headers: headers
   }).then(response => response.text().then(text => {
     let result = null;
     try {
@@ -71,6 +88,11 @@ function postToPhp(url, data) {
       result = null;
     }
     if (result) {
+      if (result.csrf_token) {
+        sessionStorage.setItem('csrf_token', result.csrf_token);
+      } else if (result.user && result.user.csrf_token) {
+        sessionStorage.setItem('csrf_token', result.user.csrf_token);
+      }
       return result;
     }
     if (!response.ok) {
@@ -1175,63 +1197,6 @@ function openStudentEditProfileModal(user) {
   modal.classList.add('active');
 }
 
-function openStudentEditProfileModal(user) {
-  let modal = document.getElementById('studentEditProfileModal');
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = 'studentEditProfileModal';
-    modal.className = 'modal-overlay';
-    modal.innerHTML = `
-      <div class="modal-card" style="width: min(500px, 100%);">
-        <button type="button" class="close-modal" id="closeStudentEditProfileModal">&times;</button>
-        <h3>Edit My Profile</h3>
-        <form id="studentEditProfileForm" class="admin-form" style="text-align: left; margin-top: 15px;">
-          <div class="admin-form-grid">
-            <label>Full Name <input type="text" id="studentEditName" required></label>
-            <label>Student ID <input type="text" id="studentEditId" required readonly style="background: rgba(148, 166, 193, 0.1); cursor: not-allowed;"></label>
-            <label>Email <input type="email" id="studentEditEmail" required></label>
-            <label>Major <input type="text" id="studentEditMajor" required></label>
-            <label class="admin-form-full">New Password <span style="font-size:0.8rem;color:var(--muted);font-weight:normal;">(leave blank to keep current)</span> <input type="password" id="studentEditPassword"></label>
-          </div>
-          <div class="modal-actions" style="margin-top: 20px;">
-            <button type="submit" class="btn update-btn" style="width: 100%;">Update Profile</button>
-          </div>
-        </form>
-      </div>
-    `;
-    document.body.appendChild(modal);
-
-    document.getElementById('closeStudentEditProfileModal').addEventListener('click', () => modal.classList.remove('active'));
-    document.getElementById('studentEditProfileForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      postToPhp('../php/update_user.php', {
-        name: document.getElementById('studentEditName').value.trim(),
-        email: document.getElementById('studentEditEmail').value.trim(),
-        major: document.getElementById('studentEditMajor').value.trim(),
-        password: document.getElementById('studentEditPassword').value
-      }).then(function(result) {
-        if (result && result.success === false) {
-           alert(result.message || 'Error updating profile.');
-        } else {
-           alert('Profile updated successfully!');
-           modal.classList.remove('active');
-           window.location.reload();
-        }
-      }).catch(function() {
-         alert('Error connecting to server.');
-      });
-    });
-  }
-
-  document.getElementById('studentEditName').value = user.name || '';
-  document.getElementById('studentEditId').value = user.studentId || user.student_id || '';
-  document.getElementById('studentEditEmail').value = user.email || '';
-  document.getElementById('studentEditMajor').value = user.major || '';
-  document.getElementById('studentEditPassword').value = '';
-  modal.classList.add('active');
-}
-
 function createEventId(title) {
   return `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-${Date.now()}`;
 }
@@ -1271,28 +1236,12 @@ function deleteEvent(eventId) {
     return;
   }
   
-  fetch(`../php/delete_event.php?id=${encodeURIComponent(eventId)}`, {
-    credentials: 'same-origin',
-    cache: 'no-store',
-    headers: {
-      'X-Requested-With': 'XMLHttpRequest'
+  postToPhp('../php/delete_event.php', {
+    id: eventId
+  }).then(function (result) {
+    if (result && result.success === false) {
+      throw new Error(result.message || 'Event could not be deleted.');
     }
-  }).then(function (response) {
-    return response.text().then(function (text) {
-      let result = null;
-      try {
-        result = JSON.parse(text);
-      } catch (error) {
-        result = null;
-      }
-      if (result && result.success === false) {
-        throw new Error(result.message || 'Event could not be deleted.');
-      }
-      if (!response.ok) {
-        throw new Error('Event could not be deleted.');
-      }
-    });
-  }).then(function () {
     loadEventsFromServer(function() {
       refreshManagementPages();
     });
